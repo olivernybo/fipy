@@ -1,5 +1,5 @@
 # fipy
-Fipy is a node.js simple package to help you copy files from one directory to another.
+Fipy is a simple package to help you copy files from one directory to another.
 
 # Example
 ```typescript
