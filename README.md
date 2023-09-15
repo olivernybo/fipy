@@ -61,10 +61,11 @@ The rename function is called for each file that is copied. It has the following
 \- `file`: The filename that is being copied. Type: `string`  
 It must return a string with the new filename.
 
+Emits the following events:
+- `fileCopied`: Emitted when a file is copied. Parameters: `file` and `destinationFile`
+- `error`: Emitted when an error occurs. Parameters: `errorMessage`
+
 ## on
 Adds an event listener to the file copy process.  
 Parameters:
-- `event`: Must be `fileCopied`
-- `callback`: The callback function to call when the event is fired. The callback function has the following parameters:
-  - `file`: The file that was copied. Type: `string`
-  - `destinationFile`: The destination file. Type: `string`
+- `event`: Must be `fileCopied` or `error`
