@@ -55,7 +55,11 @@ Whether to create the destination folder if it doesn't exist. Also creates subfo
 Type: `boolean`
 
 ## copyFiles
-Copies files from one directory to another.
+Copies files from one directory to another.  
+Parameters: optional rename function.  
+The rename function is called for each file that is copied. It has the following parameters:  
+\- `file`: The filename that is being copied. Type: `string`  
+It must return a string with the new filename.
 
 ## on
 Adds an event listener to the file copy process.  

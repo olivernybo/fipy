@@ -11,12 +11,13 @@ export class FileCopy extends EventEmitter {
 
 	/**
 	 * Copies files from the source folder to the destination folder. Emits a fileCopied event for each file copied.
-	 * @throws {Error} Throws an error if the destination folder does not exist and createDestinationFolder is false.
+	 * @throws {Error} Emits an error event if the source folder does not exist.
 	 */
-	public copyFiles(): void {
+	public copyFiles(renameFunction?: (file: string) => string): void {
 		// Check if source folder exists
 		if (!fs.existsSync(this.settings.source)) {
-			throw new Error(`Source folder does not exist: ${this.settings.source}`);
+			// throw new Error(`Source folder does not exist: ${this.settings.source}`);
+			this.emit('error', `Source folder does not exist: ${this.settings.source}`);
 		}
 
 		// Check if destination folder exists
@@ -25,7 +26,8 @@ export class FileCopy extends EventEmitter {
 			if (this.settings.createDestinationFolder) {
 				fs.mkdirSync(this.settings.destination, { recursive: true });
 			} else {
-				throw new Error(`Destination folder does not exist: ${this.settings.destination}`);
+				// throw new Error(`Destination folder does not exist: ${this.settings.destination}`);
+				this.emit('error', `Destination folder does not exist: ${this.settings.destination}`);
 			}
 		}
 
@@ -34,21 +36,25 @@ export class FileCopy extends EventEmitter {
 
 		// Copy files
 		for (const file of files) {
-			this.copyFile(file);
+			this.copyFile(file, renameFunction);
 		}
 	}
 
-	private copyFile(file: string): void {
+	private copyFile(file: string, renameFunction?: (file: string) => string): void {
 		// If createDestinationFolder, create subfolders, else just use the destination folder
+		const basename = path.basename(file);
 		const destinationFolder = this.settings.createDestinationFolder ? path.join(this.settings.destination, path.dirname(path.relative(this.settings.source, file))) : this.settings.destination;
+		const destinationFile = path.join(destinationFolder, renameFunction ? renameFunction(basename) : basename);
+
+		// Get folder of destination file
+		const destinationFileFolder = path.dirname(destinationFile);
 
 		// Create destination folder if createDestinationFolder is true and if it doesn't exist
-		if (this.settings.createDestinationFolder && !fs.existsSync(destinationFolder)) {
-			fs.mkdirSync(destinationFolder, { recursive: true });
+		if (this.settings.createDestinationFolder && !fs.existsSync(destinationFileFolder)) {
+			fs.mkdirSync(destinationFileFolder, { recursive: true });
 		}
 
 		// Copy file
-		const destinationFile = path.join(destinationFolder, path.basename(file));
 		fs.copyFileSync(file, destinationFile, this.settings.overwrite ? undefined : fs.constants.COPYFILE_EXCL);
 
 		// Emit event
@@ -112,12 +118,12 @@ export class FileCopy extends EventEmitter {
 	}
 
 	/**
-	 * Adds a listener for the fileCopied event.
-	 * @param event The event to listen for. Only fileCopied is supported.
+	 * Adds a listener for the fileCopied or error event.
+	 * @param event The event to listen for. Supported events are 'fileCopied' and 'error'.
 	 * @param listener The callback function to call when the event is emitted. The callback function takes two arguments: file and destinationFile.
 	 * @returns This instance of FileCopy.
 	 */
-	public override on(event: 'fileCopied', listener: (...args: unknown[]) => void): this {
+	public override on(event: 'fileCopied' | 'error', listener: (...args: unknown[]) => void): this {
 		return super.on(event, listener);
 	}
 }
