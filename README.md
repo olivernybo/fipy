@@ -65,7 +65,21 @@ Emits the following events:
 - `fileCopied`: Emitted when a file is copied. Parameters: `file` and `destinationFile`
 - `error`: Emitted when an error occurs. Parameters: `errorMessage`
 
+## moveFiles
+Moves files from one directory to another.  
+Parameters: optional rename function.  
+The rename function is called for each file that is moved. It has the following parameters:  
+\- `file`: The filename that is being moved. Type: `string`  
+It must return a string with the new filename.
+
+Emits the following events:
+- `fileCopied`: Emitted when a file is moved. Parameters: `file` and `destinationFile`
+- `fileDeleted`: Emitted when a file is deleted. Parameters: `file`
+- `error`: Emitted when an error occurs. Parameters: `errorMessage`
+
 ## on
-Adds an event listener to the file copy process.  
-Parameters:
-- `event`: Must be `fileCopied` or `error`
+Adds an event listener.  
+Available events:
+- `fileCopied`: Emitted when a file is copied. Parameters: `file` and `destinationFile`
+- `fileDeleted`: Emitted when a file is deleted. Parameters: `file`
+- `error`: Emitted when an error occurs. Parameters: `errorMessage`

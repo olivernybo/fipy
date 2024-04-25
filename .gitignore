@@ -1,3 +1,5 @@
+*.fipy.test
+
 # Logs
 logs
 *.log
